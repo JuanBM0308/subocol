@@ -1,0 +1,1 @@
+"Crear el archivo compose.yaml raíz para Podman Compose configurando la red privada workshop-net, los contenedores de PostgreSQL 16 con baes de datos separadas (orders_db y appointments_db), RabbitMQ con management habilitado. Además, crear los scripts SQL de inicialización y extensiones necesarias en docker-entrypoint-initdb.d."

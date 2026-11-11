@@ -1,0 +1,10 @@
+[
+  {
+    "uuid": "01a1c8f3-b646-7df0-912e-2f3f22fe5bad",
+    "slug": "compose-podman-stack",
+    "dirName": "261111-compose-podman-stack",
+    "scope": "infra",
+    "status": "in-flight",
+    "request": "d7222405"
+  }
+]

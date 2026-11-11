@@ -1,0 +1,152 @@
+{
+  "stage": "nfr-design",
+  "upstream_ids": [
+    "NFR8.1",
+    "NFR8.9",
+    "NFR8.2",
+    "NFR8.3",
+    "NFR8.4",
+    "NFR2.1",
+    "NFR2.2",
+    "NFR2.3",
+    "NFR4.1",
+    "NFR4.2",
+    "NFR4.3",
+    "NFR4.4",
+    "NFR7.1",
+    "NFR7.2",
+    "NFR7.3",
+    "NFR7.4",
+    "NFR7.5",
+    "NFR4.6",
+    "NFR8.5",
+    "NFR8.6",
+    "NFR8.7",
+    "NFR8.8",
+    "NFR1.1",
+    "NFR1.2",
+    "NFR1.3",
+    "NFR5.4",
+    "NFR1.4",
+    "NFR1.5",
+    "NFR4.5"
+  ],
+  "coverage": [
+    {
+      "id": "NFR8.1",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR8.9",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR8.2",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR8.3",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR8.4",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR2.1",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR2.2",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR2.3",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR4.1",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR4.2",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR4.3",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR4.4",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR7.1",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR7.2",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR7.3",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR7.4",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR7.5",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR4.6",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR8.5",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR8.6",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR8.7",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR8.8",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR1.1",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR1.2",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR1.3",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR5.4",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR1.4",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR1.5",
+      "status": "GAP"
+    },
+    {
+      "id": "NFR4.5",
+      "status": "GAP"
+    }
+  ]
+}
