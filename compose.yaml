@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: subocol-postgres
+    environment:
+      POSTGRES_MULTIPLE_DATABASES: "orders_db,appointments_db"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: subocol-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  order-service:
+    build: ./subocol-order-service
+    container_name: order-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/orders_db
+      SPRING_RABBITMQ_HOST: rabbitmq
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  appointment-service:
+    build: ./subocol-appointment-service
+    container_name: appointment-service
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/appointments_db
+      SPRING_RABBITMQ_HOST: rabbitmq
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  notification-worker:
+    build: ./subocol-notification-worker
+    container_name: notification-worker
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+    depends_on:
+      - rabbitmq
+
+  frontend:
+    build: ./subocol-frontend
+    container_name: subocol-frontend
+    ports:
+      - "8080:80"
+
+volumes:
+  postgres_data:
