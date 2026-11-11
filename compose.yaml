@@ -1,59 +1,219 @@
-version: '3.8'
+# Taller 360 Subocol — stack local con Podman Compose.
+#
+# Un solo comando levanta todo: `podman compose up --build`
+#
+# Topología: frontend (8080) -> gateway (8081) -> order-service (8082) /
+# appointment-service (8083) -> PostgreSQL 16 (5432) y RabbitMQ (5672).
+# Solo se publican 8080, 8081 y 15672 (management de RabbitMQ).
+
+name: subocol
 
 services:
   postgres:
     image: postgres:16-alpine
     container_name: subocol-postgres
     environment:
-      POSTGRES_MULTIPLE_DATABASES: "orders_db,appointments_db"
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgrespassword
-    ports:
-      - "5432:5432"
+      POSTGRES_PASSWORD: ${POSTGRES_SUPERUSER_PASSWORD:-postgres_local_pwd}
+      POSTGRES_DB: orders_db
+      ORDERS_OWNER_PASSWORD: ${ORDERS_OWNER_PASSWORD:-orders_owner_local_pwd}
+      ORDERS_USER_PASSWORD: ${ORDERS_USER_PASSWORD:-orders_user_local_pwd}
+      APPOINTMENT_OWNER_PASSWORD: ${APPOINTMENT_OWNER_PASSWORD:-appointment_owner_local_pwd}
+      APPOINTMENT_USER_PASSWORD: ${APPOINTMENT_USER_PASSWORD:-appointment_user_local_pwd}
+      POSTGRES_INITDB_ARGS: --data-checksums
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - subocol-postgres-data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    command:
+      - postgres
+      - -c
+      - shared_buffers=64MB
+      - -c
+      - work_mem=2MB
+      - -c
+      - max_connections=50
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d orders_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - workshop-net
+    mem_limit: 384m
+    cpus: 0.5
+    restart: unless-stopped
 
   rabbitmq:
-    image: rabbitmq:3-management-alpine
+    image: rabbitmq:3.13-management-alpine
     container_name: subocol-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-workshop}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-workshop_local_pwd}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST:-workshop}
+    volumes:
+      - subocol-rabbitmq-data:/var/lib/rabbitmq
     ports:
-      - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    networks:
+      - workshop-net
+    mem_limit: 256m
+    cpus: 0.5
+    restart: unless-stopped
 
   order-service:
-    build: ./subocol-order-service
-    container_name: order-service
+    build:
+      context: ./subocol-order-service
+    container_name: subocol-order-service
     environment:
+      SERVER_PORT: 8082
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/orders_db
+      SPRING_DATASOURCE_USERNAME: orders_user
+      SPRING_DATASOURCE_PASSWORD: ${ORDERS_USER_PASSWORD:-orders_user_local_pwd}
+      SPRING_FLYWAY_USER: orders_owner
+      SPRING_FLYWAY_PASSWORD: ${ORDERS_OWNER_PASSWORD:-orders_owner_local_pwd}
       SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_DEFAULT_USER:-workshop}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_DEFAULT_PASS:-workshop_local_pwd}
+      SPRING_RABBITMQ_VHOST: ${RABBITMQ_DEFAULT_VHOST:-workshop}
+      SPRING_RABBITMQ_VIRTUAL_HOST: ${RABBITMQ_DEFAULT_VHOST:-workshop}
+      APP_ACTOR: ${APP_ACTOR:-dev-advisor}
     depends_on:
-      - postgres
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8082/actuator/health | grep -q '\"status\":\"UP\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 45s
+    networks:
+      - workshop-net
+    mem_limit: 320m
+    cpus: 0.5
+    restart: unless-stopped
 
   appointment-service:
-    build: ./subocol-appointment-service
-    container_name: appointment-service
+    build:
+      context: ./subocol-appointment-service
+    container_name: subocol-appointment-service
     environment:
+      SERVER_PORT: 8083
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/appointments_db
+      SPRING_DATASOURCE_USERNAME: appointment_user
+      SPRING_DATASOURCE_PASSWORD: ${APPOINTMENT_USER_PASSWORD:-appointment_user_local_pwd}
+      SPRING_FLYWAY_USER: appointment_owner
+      SPRING_FLYWAY_PASSWORD: ${APPOINTMENT_OWNER_PASSWORD:-appointment_owner_local_pwd}
       SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_DEFAULT_USER:-workshop}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_DEFAULT_PASS:-workshop_local_pwd}
+      SPRING_RABBITMQ_VHOST: ${RABBITMQ_DEFAULT_VHOST:-workshop}
+      SPRING_RABBITMQ_VIRTUAL_HOST: ${RABBITMQ_DEFAULT_VHOST:-workshop}
     depends_on:
-      - postgres
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8083/actuator/health | grep -q '\"status\":\"UP\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 45s
+    networks:
+      - workshop-net
+    mem_limit: 224m
+    cpus: 0.25
+    restart: unless-stopped
 
   notification-worker:
-    build: ./subocol-notification-worker
-    container_name: notification-worker
+    build:
+      context: ./subocol-notification-worker
+    container_name: subocol-notification-worker
     environment:
       SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_DEFAULT_USER:-workshop}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_DEFAULT_PASS:-workshop_local_pwd}
+      SPRING_RABBITMQ_VHOST: ${RABBITMQ_DEFAULT_VHOST:-workshop}
+      SPRING_RABBITMQ_VIRTUAL_HOST: ${RABBITMQ_DEFAULT_VHOST:-workshop}
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "kill -0 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - workshop-net
+    mem_limit: 224m
+    cpus: 0.25
+    restart: unless-stopped
+
+  gateway:
+    build:
+      context: ./subocol-gateway
+    container_name: subocol-gateway
+    environment:
+      SERVER_PORT: 8081
+      GATEWAY_ORDERS_URL: http://order-service:8082
+      GATEWAY_APPOINTMENTS_URL: http://appointment-service:8083
+    depends_on:
+      order-service:
+        condition: service_healthy
+      appointment-service:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8081/actuator/health | grep -q '\"status\":\"UP\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    networks:
+      - workshop-net
+    mem_limit: 224m
+    cpus: 0.25
+    restart: unless-stopped
 
   frontend:
-    build: ./subocol-frontend
+    build:
+      context: ./subocol-frontend
     container_name: subocol-frontend
+    depends_on:
+      gateway:
+        condition: service_healthy
     ports:
       - "8080:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    networks:
+      - workshop-net
+    mem_limit: 64m
+    cpus: 0.25
+    restart: unless-stopped
+
+networks:
+  workshop-net:
+    name: workshop-net
+    driver: bridge
 
 volumes:
-  postgres_data:
+  subocol-postgres-data:
+    name: subocol-postgres-data
+  subocol-rabbitmq-data:
+    name: subocol-rabbitmq-data

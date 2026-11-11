@@ -24,3 +24,6 @@ aidlc/spaces/*/intents/*/runtime-graph.json
 aidlc/spaces/*/intents/*/.aidlc-*
 aidlc/diagnostics/
 # END AI-DLC:gitignore
+
+# Credenciales locales del entorno de taller: nunca se versionan.
+.env
