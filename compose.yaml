@@ -84,6 +84,7 @@ services:
       SPRING_RABBITMQ_VHOST: ${RABBITMQ_DEFAULT_VHOST:-workshop}
       SPRING_RABBITMQ_VIRTUAL_HOST: ${RABBITMQ_DEFAULT_VHOST:-workshop}
       APP_ACTOR: ${APP_ACTOR:-dev-advisor}
+      APP_ACTOR_ROLE: ${APP_ACTOR_ROLE:-SUPERVISOR}
     depends_on:
       postgres:
         condition: service_healthy
