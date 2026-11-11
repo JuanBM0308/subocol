@@ -125,3 +125,8 @@ Se debe garantizar una cobertura de código superior o igual al 80% con pruebas 
 
 ## 6. Se debe garantizar monitoreo
 Por medio de tablas auxiliares en base de datos o herramientas especializadas open source se debe implementar la auditoria de todos los eventos dentro de las bases de datos y sus registros.
+
+---
+
+## 7. Garantizar el seguimiento estricto de la arquitectura de software definida y transpilada a .md
+Arquitectura definida en el path: C:\Users\Juan Barbosa\Documents\subocol\ARCHITECTURE.md
