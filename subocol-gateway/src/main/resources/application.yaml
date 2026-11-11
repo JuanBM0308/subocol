@@ -1,0 +1,30 @@
+server:
+  port: 8081
+  error:
+    include-stacktrace: never
+
+# Tabla de rutas del gateway: el codigo no conoce la direccion de ningun
+# servicio, todo viene de aqui.
+gateway:
+  routes:
+    - path: /api/orders/**
+      target: ${GATEWAY_ORDERS_URL:http://order-service:8082}
+    - path: /api/appointments/**
+      target: ${GATEWAY_APPOINTMENTS_URL:http://appointment-service:8083}
+  cors:
+    allowed-origins:
+      - http://localhost:8080
+  timeouts:
+    connect-timeout: 5s
+    response-timeout: 10s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  structured:
+    format:
+      console: ecs
