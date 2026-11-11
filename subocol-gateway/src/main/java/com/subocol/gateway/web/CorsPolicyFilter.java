@@ -38,6 +38,12 @@ public class CorsPolicyFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		String origin = request.getHeader("Origin");
 		boolean allowed = origin != null && allowedOrigins.contains(origin);
+		if (origin != null && !allowed) {
+			// Origen no declarado: se rechaza la peticion, no se responde con una
+			// cabecera CORS parcial (NFR7.3).
+			response.sendError(HttpServletResponse.SC_FORBIDDEN, "Origin not allowed: " + origin);
+			return;
+		}
 		if (allowed) {
 			response.setHeader("Access-Control-Allow-Origin", origin);
 			response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
