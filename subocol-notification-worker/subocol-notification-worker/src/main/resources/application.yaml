@@ -1,3 +1,25 @@
 spring:
   application:
     name: subocol-notification-worker
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
+    virtual-host: ${SPRING_RABBITMQ_VIRTUAL_HOST:/}
+    listener:
+      simple:
+        concurrency: 1
+        max-concurrency: 1
+        prefetch: 10
+
+subocol:
+  events:
+    # Exchange topic y durable del taller (contrato de dominio, seccion 3).
+    exchange: ${SUBOCOL_EVENTS_EXCHANGE:subocol.events}
+    queue: ${SUBOCOL_EVENTS_QUEUE:subocol.notification-worker}
+
+logging:
+  structured:
+    format:
+      console: ecs
