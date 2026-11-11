@@ -1,3 +1,40 @@
+server:
+  port: 8082
+  error:
+    include-stacktrace: never
+
 spring:
   application:
     name: subocol-order-service
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  flyway:
+    user: ${SPRING_FLYWAY_USER}
+    password: ${SPRING_FLYWAY_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  jackson:
+    datatype:
+      datetime:
+        # Spring Boot 4 usa Jackson 3: el feature de fechas vive en
+        # DateTimeFeature, no en SerializationFeature. Las fechas salen como
+        # texto ISO-8601, nunca como marcas de tiempo numéricas.
+        write-dates-as-timestamps: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  structured:
+    format:
+      console: ecs
+
+app:
+  actor: ${APP_ACTOR:dev-advisor}
