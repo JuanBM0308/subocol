@@ -1,0 +1,60 @@
+<section class="orders">
+  <header class="orders__header">
+    <div>
+      <h2 class="orders__title">Órdenes de servicio</h2>
+      <p class="orders__subtitle">Órdenes registradas en el taller</p>
+    </div>
+    <a class="button button--primary" routerLink="/nueva">Nueva orden</a>
+  </header>
+
+  @if (loading()) {
+    <p class="state state--loading" role="status">Cargando órdenes…</p>
+  } @else if (errorMessage(); as error) {
+    <div class="state state--error" role="alert">
+      <p class="state__title">No se pudieron cargar las órdenes</p>
+      <p class="state__detail">{{ error }}</p>
+      <button type="button" class="button" (click)="loadOrders()">Reintentar</button>
+    </div>
+  } @else if (orders().length === 0) {
+    <p class="state state--empty">Todavía no hay órdenes registradas</p>
+  } @else {
+    <div class="orders__table-wrapper">
+      <table class="table">
+        <caption class="table__caption">
+          Órdenes registradas
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Orden</th>
+            <th scope="col">Cliente</th>
+            <th scope="col">Placa</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Registrada</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (order of orders(); track order.orderId) {
+            <tr>
+              <td class="table__id">
+                <a
+                  class="link"
+                  [routerLink]="['/detalle', order.orderId]"
+                  [title]="order.orderId"
+                  [attr.aria-label]="'Ver detalle de la orden ' + order.orderId"
+                >
+                  {{ shortOrderId(order.orderId) }}
+                </a>
+              </td>
+              <td>{{ order.customerName }}</td>
+              <td>{{ order.vehiclePlate }}</td>
+              <td>
+                <span class="badge">{{ order.status }}</span>
+              </td>
+              <td>{{ order.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

@@ -1,0 +1,96 @@
+<section class="order-detail">
+  <header class="orders__header">
+    <div>
+      <h2 class="orders__title">Detalle de la orden</h2>
+      <p class="orders__subtitle">{{ shortOrderId(orderId()) }}</p>
+    </div>
+    <a class="button" routerLink="/">Volver al listado</a>
+  </header>
+
+  @if (loading()) {
+    <p class="state state--loading" role="status">Cargando la orden…</p>
+  } @else if (notFound()) {
+    <div class="state state--error" role="alert">
+      <p class="state__title">Orden no encontrada</p>
+      <p class="state__detail">
+        No existe una orden con el identificador {{ shortOrderId(orderId()) }}.
+      </p>
+      <a class="button" routerLink="/">Volver al listado</a>
+    </div>
+  } @else if (errorMessage(); as error) {
+    <div class="state state--error" role="alert">
+      <p class="state__title">No se pudo cargar la orden</p>
+      <p class="state__detail">{{ error }}</p>
+      <button type="button" class="button" (click)="reload()">Reintentar</button>
+    </div>
+  } @else if (order(); as detail) {
+    <dl class="detail">
+      <div class="detail__item">
+        <dt class="detail__term">Identificador</dt>
+        <dd class="detail__value detail__value--id">{{ detail.orderId }}</dd>
+      </div>
+      <div class="detail__item">
+        <dt class="detail__term">Cliente</dt>
+        <dd class="detail__value">{{ detail.customerName }}</dd>
+      </div>
+      <div class="detail__item">
+        <dt class="detail__term">Placa</dt>
+        <dd class="detail__value">{{ detail.vehiclePlate }}</dd>
+      </div>
+      <div class="detail__item">
+        <dt class="detail__term">Aseguradora</dt>
+        <dd class="detail__value">{{ detail.insurerCode ?? 'Sin aseguradora' }}</dd>
+      </div>
+      <div class="detail__item">
+        <dt class="detail__term">Estado</dt>
+        <dd class="detail__value">
+          <span class="badge">{{ detail.status }}</span>
+        </dd>
+      </div>
+      <div class="detail__item">
+        <dt class="detail__term">Registrada</dt>
+        <dd class="detail__value">{{ detail.createdAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
+      </div>
+      <div class="detail__item detail__item--full">
+        <dt class="detail__term">Descripción del vehículo</dt>
+        <dd class="detail__value">{{ detail.vehicleDescription }}</dd>
+      </div>
+    </dl>
+
+    <div class="orders__table-wrapper">
+      <table class="table">
+        <caption class="table__caption">
+          Historial de estados
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Cambio de estado</th>
+            <th scope="col">Razón</th>
+            <th scope="col">Cambió</th>
+            <th scope="col">Cuándo</th>
+            <th scope="col">Hash</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entry of detail.history ?? []; track entry.eventId) {
+            <tr>
+              <td>
+                {{ entry.fromStatus ?? 'Inicial' }}
+                <span aria-hidden="true">→</span>
+                <span class="badge">{{ entry.toStatus }}</span>
+              </td>
+              <td>{{ entry.reason ?? '—' }}</td>
+              <td>{{ entry.changedBy }}</td>
+              <td>{{ entry.changedAt | date: 'dd/MM/yyyy HH:mm:ss' }}</td>
+              <td class="table__id" [title]="entry.eventHash">{{ shortHash(entry.eventHash) }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td class="table__empty" colspan="5">Todavía no hay cambios de estado registrados</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

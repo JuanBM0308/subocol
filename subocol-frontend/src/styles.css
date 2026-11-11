@@ -1,1 +1,273 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --color-bg: #f4f6fb;
+  --color-surface: #ffffff;
+  --color-border: #d8dee9;
+  --color-text: #1f2933;
+  --color-muted: #52606d;
+  --color-primary: #1d4ed8;
+  --color-primary-dark: #1e3a8a;
+  --color-danger: #b42318;
+  --color-danger-bg: #fef3f2;
+  --radius: 0.5rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
+  margin: 0;
+}
+
+h2 {
+  font-size: 1.35rem;
+  margin: 0;
+}
+
+/* ---------- Encabezados de sección ---------- */
+
+.orders__header {
+  align-items: flex-start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.orders__subtitle {
+  color: var(--color-muted);
+  margin: 0.25rem 0 0;
+}
+
+/* ---------- Botones ---------- */
+
+.button {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  cursor: pointer;
+  display: inline-block;
+  font: inherit;
+  padding: 0.5rem 0.9rem;
+  text-decoration: none;
+}
+
+.button:hover:not(:disabled) {
+  border-color: var(--color-muted);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.button--primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.button--primary:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+/* ---------- Estados del listado ---------- */
+
+.state {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-muted);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.state--error {
+  background: var(--color-danger-bg);
+  border-color: #fda29b;
+  color: var(--color-danger);
+  text-align: left;
+}
+
+.state__title {
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.state__detail {
+  margin: 0 0 1rem;
+}
+
+/* ---------- Tabla ---------- */
+
+.orders__table-wrapper {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+
+.table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table__caption {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.table th,
+.table td {
+  border-top: 1px solid var(--color-border);
+  padding: 0.6rem 1rem;
+  text-align: left;
+}
+
+.table th {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.table__id {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 0.9rem;
+}
+
+.table__empty {
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.link {
+  color: var(--color-primary);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Detalle de la orden ---------- */
+
+.detail {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  margin: 0 0 1.5rem;
+  padding: 1.5rem;
+}
+
+.detail__item {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.detail__item--full {
+  grid-column: 1 / -1;
+}
+
+.detail__term {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.detail__value {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.detail__value--id {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 0.9rem;
+}
+
+.badge {
+  background: #e8eefc;
+  border-radius: 999px;
+  color: var(--color-primary-dark);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.15rem 0.6rem;
+  white-space: nowrap;
+}
+
+/* ---------- Formulario ---------- */
+
+.form {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  display: grid;
+  gap: 1.1rem;
+  padding: 1.5rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.field__label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.field__input {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font: inherit;
+  padding: 0.5rem 0.65rem;
+  width: 100%;
+}
+
+.field__input:focus {
+  border-color: var(--color-primary);
+  outline: 2px solid rgba(29, 78, 216, 0.25);
+}
+
+.field__input--textarea {
+  resize: vertical;
+}
+
+.field__error {
+  color: var(--color-danger);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.form__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* ---------- Alertas ---------- */
+
+.alert {
+  border-radius: var(--radius);
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+}
+
+.alert--error {
+  background: var(--color-danger-bg);
+  border: 1px solid #fda29b;
+  color: var(--color-danger);
+}

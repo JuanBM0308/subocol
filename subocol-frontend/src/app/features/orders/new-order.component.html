@@ -1,0 +1,84 @@
+<section class="new-order">
+  <header class="orders__header">
+    <div>
+      <h2 class="orders__title">Nueva orden de servicio</h2>
+      <p class="orders__subtitle">Registrá la orden para el taller</p>
+    </div>
+  </header>
+
+  @if (errorMessage(); as error) {
+    <p class="alert alert--error" role="alert">{{ error }}</p>
+  }
+
+  <form class="form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="field">
+      <label class="field__label" for="customerName">Cliente</label>
+      <input
+        class="field__input"
+        id="customerName"
+        name="customerName"
+        type="text"
+        formControlName="customerName"
+        maxlength="120"
+        autocomplete="name"
+      />
+      @if (fieldError('customerName'); as error) {
+        <p class="field__error">{{ error }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="vehiclePlate">Placa del vehículo</label>
+      <input
+        class="field__input"
+        id="vehiclePlate"
+        name="vehiclePlate"
+        type="text"
+        formControlName="vehiclePlate"
+        maxlength="16"
+        autocomplete="off"
+      />
+      @if (fieldError('vehiclePlate'); as error) {
+        <p class="field__error">{{ error }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="vehicleDescription">Descripción del vehículo</label>
+      <textarea
+        class="field__input field__input--textarea"
+        id="vehicleDescription"
+        name="vehicleDescription"
+        rows="4"
+        formControlName="vehicleDescription"
+        maxlength="2000"
+      ></textarea>
+      @if (fieldError('vehicleDescription'); as error) {
+        <p class="field__error">{{ error }}</p>
+      }
+    </div>
+
+    <div class="field">
+      <label class="field__label" for="insurerCode">Código de aseguradora (opcional)</label>
+      <input
+        class="field__input"
+        id="insurerCode"
+        name="insurerCode"
+        type="text"
+        formControlName="insurerCode"
+        maxlength="32"
+        autocomplete="off"
+      />
+      @if (fieldError('insurerCode'); as error) {
+        <p class="field__error">{{ error }}</p>
+      }
+    </div>
+
+    <div class="form__actions">
+      <button class="button button--primary" type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Registrando…' : 'Registrar orden' }}
+      </button>
+      <a class="button" routerLink="/">Cancelar</a>
+    </div>
+  </form>
+</section>
